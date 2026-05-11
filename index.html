@@ -3,146 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>満員スイーパー</title>
 
 <style>
 
-body {
-  background: #111;
-  color: white;
-  font-family: sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
+body{
+  background:#111;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
+  margin:0;
+  padding:20px;
 }
 
-h1 {
-  margin-bottom: 5px;
+h1{
+  margin-bottom:5px;
 }
 
-p {
-  color: #bbb;
+p{
+  color:#bbb;
 }
 
-#rules {
-  background: #222;
-  padding: 15px;
-  border-radius: 12px;
-  width: fit-content;
-  margin: 20px auto;
-  text-align: left;
+#rules{
+  background:#222;
+  padding:15px;
+  border-radius:12px;
+  width:fit-content;
+  margin:20px auto;
+  text-align:left;
+  max-width:700px;
 }
 
-#rules h2 {
-  margin-top: 0;
+#rules ul{
+  line-height:1.8;
 }
 
-#rules ul {
-  padding-left: 20px;
-  line-height: 1.8;
+#topbar{
+  margin-bottom:20px;
 }
 
-#train {
-  background: #c0c0c0;
-  border: 8px solid #666;
-  border-radius: 20px;
-  padding: 20px;
-  width: fit-content;
-  margin: auto;
+select,
+button{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  margin:5px;
 }
 
-#doors {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+button{
+  cursor:pointer;
+  background:#4fc3f7;
+  font-weight:bold;
 }
 
-.door {
-  width: 80px;
-  height: 10px;
-  background: #4fc3f7;
-  border-radius: 10px;
+#train{
+  background:#bdbdbd;
+  border:10px solid #666;
+  border-radius:24px;
+  padding:20px;
+  width:fit-content;
+  margin:auto;
+  position:relative;
 }
 
-#game {
-  display: grid;
-  grid-template-columns: repeat(8, 50px);
-  gap: 4px;
+#doors{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
 }
 
-.cell {
-  width: 50px;
-  height: 50px;
-  background: #444;
-  border-radius: 6px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  user-select: none;
-
-  font-size: 20px;
-  font-weight: bold;
-
-  transition: 0.1s;
+.door{
+  width:120px;
+  height:14px;
+  background:#4fc3f7;
+  border-radius:10px;
 }
 
-.cell:hover {
-  transform: scale(1.05);
+#game{
+  display:grid;
+  gap:4px;
 }
 
-.open {
-  background: #888;
+.cell{
+  width:42px;
+  height:42px;
+
+  background:#444;
+  border-radius:6px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight:bold;
+  font-size:18px;
+
+  user-select:none;
+  cursor:pointer;
+
+  transition:0.1s;
 }
 
-.mine {
-  background: crimson;
+.cell:hover{
+  transform:scale(1.05);
 }
 
-.number1 { color: #4fc3f7; }
-.number2 { color: #81c784; }
-.number3 { color: #ffb74d; }
+.open{
+  background:#8d8d8d;
+}
+
+.mine{
+  background:crimson;
+}
+
+.safe{
+  background:#2e7d32;
+}
+
+.goal{
+  background:#ffd54f;
+  color:black;
+}
+
+.number1{ color:#4fc3f7; }
+.number2{ color:#81c784; }
+.number3{ color:#ffb74d; }
 .number4,
 .number5,
 .number6,
 .number7,
-.number8 {
-  color: #ef5350;
+.number8{
+  color:#ef5350;
 }
 
-#status {
-  margin-top: 15px;
-  font-size: 18px;
+#status{
+  margin-top:20px;
+  font-size:20px;
+  min-height:30px;
 }
 
-#restartBtn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #4fc3f7;
-  color: black;
-  font-weight: bold;
-}
+@media(max-width:700px){
 
-#restartBtn:hover {
-  opacity: 0.8;
-}
-
-@media (max-width: 600px) {
-
-  #game {
-    grid-template-columns: repeat(8, 38px);
-  }
-
-  .cell {
-    width: 38px;
-    height: 38px;
-    font-size: 16px;
+  .cell{
+    width:30px;
+    height:30px;
+    font-size:14px;
   }
 
 }
@@ -153,164 +160,244 @@ p {
 <body>
 
 <h1>🚃 満員スイーパー</h1>
-<p>圧縮地獄を避けて安全地帯を探せ</p>
+
+<p>
+満員電車で圧縮地帯を避けながら、
+安全にドア付近まで移動しよう
+</p>
 
 <div id="rules">
-  <h2>📖 遊び方</h2>
 
-  <ul>
-    <li>🚃 満員電車の安全地帯を探そう</li>
-    <li>💀 危険地帯を開くとゲームオーバー</li>
-    <li>🔢 数字は周囲8マスの危険人数</li>
-    <li>🚩 右クリックで危険地帯をマーク</li>
-    <li>🧍 安全地帯をすべて開けばクリア</li>
-  </ul>
+<h2>📖 遊び方</h2>
+
+<ul>
+<li>🚪 ドア付近まで安全地帯を開いて進もう</li>
+<li>💀 は圧縮されて身動きが取れない危険地帯</li>
+<li>🔢 数字は周囲8マスの危険人数</li>
+<li>🚩 右クリックで危険地帯をマーク</li>
+<li>🟩 は比較的安全に立てる場所</li>
+<li>💥 危険地帯を開くと圧死してゲームオーバー</li>
+</ul>
+
+</div>
+
+<div id="topbar">
+
+<select id="modeSelect">
+  <option value="normal">普通電車</option>
+  <option value="rush">通勤ラッシュ</option>
+  <option value="hell">山手線地獄</option>
+</select>
+
+<button id="restartBtn">
+🔄 リスタート
+</button>
+
 </div>
 
 <div id="train">
 
-  <div id="doors">
-    <div class="door"></div>
-    <div class="door"></div>
-  </div>
+<div id="doors">
+  <div class="door"></div>
+  <div class="door"></div>
+</div>
 
-  <div id="game"></div>
+<div id="game"></div>
 
 </div>
 
 <div id="status"></div>
 
-<button id="restartBtn">🔄 リスタート</button>
-
 <script>
-
-const size = 8;
-const mineCount = 12;
 
 const game = document.getElementById("game");
 const statusText = document.getElementById("status");
 const restartBtn = document.getElementById("restartBtn");
+const modeSelect = document.getElementById("modeSelect");
+
+let width = 12;
+let height = 6;
+let mineCount = 14;
 
 let board = [];
 
-function init() {
+function setMode(){
+
+  const mode = modeSelect.value;
+
+  if(mode === "normal"){
+    width = 12;
+    height = 6;
+    mineCount = 14;
+  }
+
+  if(mode === "rush"){
+    width = 16;
+    height = 7;
+    mineCount = 28;
+  }
+
+  if(mode === "hell"){
+    width = 20;
+    height = 8;
+    mineCount = 45;
+  }
+
+}
+
+function init(){
+
+  setMode();
 
   board = [];
 
-  for (let y = 0; y < size; y++) {
+  game.style.gridTemplateColumns =
+    `repeat(${width}, 42px)`;
+
+  for(let y=0; y<height; y++){
 
     board[y] = [];
 
-    for (let x = 0; x < size; x++) {
+    for(let x=0; x<width; x++){
 
       board[y][x] = {
-        mine: false,
-        open: false,
-        flag: false,
-        count: 0,
-        element: null
+        mine:false,
+        open:false,
+        flag:false,
+        count:0,
+        element:null
       };
+
     }
+
   }
 
   placeMines();
   calculateNumbers();
   drawBoard();
 
-  statusText.textContent = "右クリックで危険地帯をマーク";
+  statusText.textContent =
+    "🚉 安全地帯を探してドアへ向かえ";
+
 }
 
-function placeMines() {
+function placeMines(){
 
   let placed = 0;
 
-  while (placed < mineCount) {
+  while(placed < mineCount){
 
-    const x = Math.floor(Math.random() * size);
-    const y = Math.floor(Math.random() * size);
+    const x =
+      Math.floor(Math.random() * width);
 
-    if (!board[y][x].mine) {
+    const y =
+      Math.floor(Math.random() * height);
+
+    if(!board[y][x].mine){
+
       board[y][x].mine = true;
       placed++;
+
     }
+
   }
+
 }
 
-function calculateNumbers() {
+function calculateNumbers(){
 
-  for (let y = 0; y < size; y++) {
+  for(let y=0; y<height; y++){
 
-    for (let x = 0; x < size; x++) {
+    for(let x=0; x<width; x++){
 
       let count = 0;
 
-      for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
+      for(let dy=-1; dy<=1; dy++){
+        for(let dx=-1; dx<=1; dx++){
 
           const ny = y + dy;
           const nx = x + dx;
 
-          if (
+          if(
             ny >= 0 &&
-            ny < size &&
+            ny < height &&
             nx >= 0 &&
-            nx < size &&
+            nx < width &&
             board[ny][nx].mine
-          ) {
+          ){
             count++;
           }
+
         }
       }
 
-      if (board[y][x].mine) count--;
+      if(board[y][x].mine){
+        count--;
+      }
 
       board[y][x].count = count;
+
     }
+
   }
+
 }
 
-function drawBoard() {
+function drawBoard(){
 
   game.innerHTML = "";
 
-  for (let y = 0; y < size; y++) {
+  for(let y=0; y<height; y++){
 
-    for (let x = 0; x < size; x++) {
+    for(let x=0; x<width; x++){
 
-      const cell = document.createElement("div");
+      const cell =
+        document.createElement("div");
 
       cell.className = "cell";
 
-      cell.onclick = () => openCell(x, y);
+      cell.onclick = () => {
+        openCell(x,y);
+      };
 
       cell.oncontextmenu = (e) => {
+
         e.preventDefault();
-        toggleFlag(x, y);
+
+        toggleFlag(x,y);
+
       };
 
       board[y][x].element = cell;
 
       game.appendChild(cell);
+
     }
+
   }
+
 }
 
-function toggleFlag(x, y) {
+function toggleFlag(x,y){
 
   const data = board[y][x];
 
-  if (data.open) return;
+  if(data.open) return;
 
   data.flag = !data.flag;
 
-  data.element.textContent = data.flag ? "🚩" : "";
+  data.element.textContent =
+    data.flag ? "🚩" : "";
+
 }
 
-function openCell(x, y) {
+function openCell(x,y){
 
   const data = board[y][x];
 
-  if (data.open || data.flag) return;
+  if(data.open || data.flag){
+    return;
+  }
 
   data.open = true;
 
@@ -318,87 +405,109 @@ function openCell(x, y) {
 
   cell.classList.add("open");
 
-  if (data.mine) {
+  if(data.mine){
 
     cell.textContent = "💥";
     cell.classList.add("mine");
 
     revealAll();
 
-    statusText.textContent = "💀 満員電車で押し潰された…";
+    statusText.textContent =
+      "💀 圧縮されて身動きが取れなくなった…";
 
     return;
+
   }
 
-  if (data.count > 0) {
+  if(data.count > 0){
 
     cell.textContent = data.count;
     cell.classList.add("number" + data.count);
 
-  } else {
+  }else{
 
-    cell.textContent = "🧍";
+    cell.textContent = "🟩";
+    cell.classList.add("safe");
 
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
+    for(let dy=-1; dy<=1; dy++){
+      for(let dx=-1; dx<=1; dx++){
 
         const nx = x + dx;
         const ny = y + dy;
 
-        if (
+        if(
           nx >= 0 &&
-          nx < size &&
+          nx < width &&
           ny >= 0 &&
-          ny < size
-        ) {
-          openCell(nx, ny);
+          ny < height
+        ){
+          openCell(nx,ny);
         }
+
       }
     }
+
   }
 
   checkWin();
+
 }
 
-function revealAll() {
+function revealAll(){
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
+  for(let y=0; y<height; y++){
+    for(let x=0; x<width; x++){
 
       const data = board[y][x];
 
-      if (data.mine) {
+      if(data.mine){
+
         data.element.textContent = "💀";
         data.element.classList.add("mine");
+
       }
+
     }
   }
+
 }
 
-function checkWin() {
+function checkWin(){
 
-  let safeCells = 0;
+  let opened = 0;
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
+  for(let y=0; y<height; y++){
+    for(let x=0; x<width; x++){
 
-      const data = board[y][x];
-
-      if (!data.mine && data.open) {
-        safeCells++;
+      if(
+        !board[y][x].mine &&
+        board[y][x].open
+      ){
+        opened++;
       }
+
     }
   }
 
-  if (safeCells === (size * size - mineCount)) {
+  if(
+    opened ===
+    (width * height - mineCount)
+  ){
 
-    statusText.textContent = "🚉 生還成功！安全地帯へ脱出した！";
+    statusText.textContent =
+      "🚪 生還成功！ドア付近へ脱出した！";
 
     revealAll();
+
   }
+
 }
 
 restartBtn.onclick = () => {
+  init();
+};
+
+modeSelect.onchange = () => {
   init();
 };
 
