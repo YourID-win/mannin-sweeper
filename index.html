@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>満員スイーパー</title>
 
 <style>
@@ -23,6 +24,24 @@ p {
   color: #bbb;
 }
 
+#rules {
+  background: #222;
+  padding: 15px;
+  border-radius: 12px;
+  width: fit-content;
+  margin: 20px auto;
+  text-align: left;
+}
+
+#rules h2 {
+  margin-top: 0;
+}
+
+#rules ul {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
 #train {
   background: #c0c0c0;
   border: 8px solid #666;
@@ -30,7 +49,6 @@ p {
   padding: 20px;
   width: fit-content;
   margin: auto;
-  position: relative;
 }
 
 #doors {
@@ -83,18 +101,50 @@ p {
   background: crimson;
 }
 
-.safezone {
-  background: #2e7d32;
-}
-
 .number1 { color: #4fc3f7; }
 .number2 { color: #81c784; }
 .number3 { color: #ffb74d; }
-.number4 { color: #ef5350; }
+.number4,
+.number5,
+.number6,
+.number7,
+.number8 {
+  color: #ef5350;
+}
 
 #status {
   margin-top: 15px;
   font-size: 18px;
+}
+
+#restartBtn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #4fc3f7;
+  color: black;
+  font-weight: bold;
+}
+
+#restartBtn:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+
+  #game {
+    grid-template-columns: repeat(8, 38px);
+  }
+
+  .cell {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
 }
 
 </style>
@@ -103,7 +153,19 @@ p {
 <body>
 
 <h1>🚃 満員スイーパー</h1>
-<p>圧縮地獄を避けてドア付近へ逃げろ</p>
+<p>圧縮地獄を避けて安全地帯を探せ</p>
+
+<div id="rules">
+  <h2>📖 遊び方</h2>
+
+  <ul>
+    <li>🚃 満員電車の安全地帯を探そう</li>
+    <li>💀 危険地帯を開くとゲームオーバー</li>
+    <li>🔢 数字は周囲8マスの危険人数</li>
+    <li>🚩 右クリックで危険地帯をマーク</li>
+    <li>🧍 安全地帯をすべて開けばクリア</li>
+  </ul>
+</div>
 
 <div id="train">
 
@@ -118,6 +180,8 @@ p {
 
 <div id="status"></div>
 
+<button id="restartBtn">🔄 リスタート</button>
+
 <script>
 
 const size = 8;
@@ -125,10 +189,13 @@ const mineCount = 12;
 
 const game = document.getElementById("game");
 const statusText = document.getElementById("status");
+const restartBtn = document.getElementById("restartBtn");
 
 let board = [];
 
 function init() {
+
+  board = [];
 
   for (let y = 0; y < size; y++) {
 
@@ -258,7 +325,7 @@ function openCell(x, y) {
 
     revealAll();
 
-    statusText.textContent = "満員電車に押し潰された…";
+    statusText.textContent = "💀 満員電車に押し潰された…";
 
     return;
   }
@@ -325,11 +392,15 @@ function checkWin() {
 
   if (safeCells === (size * size - mineCount)) {
 
-    statusText.textContent = "🚉 生還成功！ドアへ脱出した！";
+    statusText.textContent = "🚉 生還成功！安全地帯へ脱出した！";
 
     revealAll();
   }
 }
+
+restartBtn.onclick = () => {
+  init();
+};
 
 init();
 
