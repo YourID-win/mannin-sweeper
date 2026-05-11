@@ -62,6 +62,14 @@ button:hover{
   opacity:0.85;
 }
 
+#mineCounter{
+  display:inline-block;
+  margin-left:10px;
+  font-size:18px;
+  font-weight:bold;
+  color:#ffd54f;
+}
+
 #train{
   background:#bdbdbd;
   border:10px solid #666;
@@ -170,11 +178,11 @@ button:hover{
 <h2>📖 遊び方</h2>
 
 <ul>
-<li>🟩 安全に立てる場所を見つけよう</li>
-<li>💀 危険地帯を開くと身動きが取れなくなる</li>
-<li>🔢 数字は周囲8マスの危険人数</li>
-<li>🚩 右クリックで危険地帯をマーク</li>
-<li>🚉 すべての安全地帯を開けばクリア</li>
+<li>🟩 安全地帯を見つけよう</li>
+<li>💀 圧縮危険地帯を開くと身動きが取れなくなる</li>
+<li>🔢 数字は周囲8マスの圧縮危険地帯の数</li>
+<li>🚩 右クリックで圧縮危険地帯をマーク</li>
+<li>🚉 安全地帯をすべて開けばクリア</li>
 </ul>
 
 </div>
@@ -184,12 +192,14 @@ button:hover{
 <select id="modeSelect">
   <option value="normal">普通電車</option>
   <option value="rush">通勤ラッシュ</option>
-  <option value="hell">山手線地獄</option>
+  <option value="hell">朝の東西線</option>
 </select>
 
 <button id="restartBtn">
 🔄 リスタート
 </button>
+
+<span id="mineCounter"></span>
 
 </div>
 
@@ -212,6 +222,7 @@ const game = document.getElementById("game");
 const statusText = document.getElementById("status");
 const restartBtn = document.getElementById("restartBtn");
 const modeSelect = document.getElementById("modeSelect");
+const mineCounter = document.getElementById("mineCounter");
 
 let width = 12;
 let height = 6;
@@ -276,6 +287,9 @@ function init(){
   placeMines();
   calculateNumbers();
   drawBoard();
+
+  mineCounter.textContent =
+    `🚧 圧縮危険地帯: ${mineCount}`;
 
   statusText.textContent =
     "🚉 安全地帯を探そう";
