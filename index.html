@@ -1,81 +1,339 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>満員スイーパー</title>
+<meta charset="UTF-8">
+<title>満員スイーパー</title>
 
-  <style>
-    body {
-      background: #222;
-      color: white;
-      font-family: sans-serif;
-      text-align: center;
-    }
+<style>
 
-    h1 {
-      margin-top: 20px;
-    }
+body {
+  background: #111;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
 
-    #game {
-      display: grid;
-      grid-template-columns: repeat(8, 50px);
-      gap: 4px;
-      justify-content: center;
-      margin-top: 20px;
-    }
+h1 {
+  margin-bottom: 5px;
+}
 
-    .cell {
-      width: 50px;
-      height: 50px;
-      background: #444;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 20px;
-      border-radius: 4px;
-    }
+p {
+  color: #bbb;
+}
 
-    .safe {
-      background: #666;
-    }
+#train {
+  background: #c0c0c0;
+  border: 8px solid #666;
+  border-radius: 20px;
+  padding: 20px;
+  width: fit-content;
+  margin: auto;
+  position: relative;
+}
 
-    .danger {
-      background: crimson;
-    }
-  </style>
+#doors {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.door {
+  width: 80px;
+  height: 10px;
+  background: #4fc3f7;
+  border-radius: 10px;
+}
+
+#game {
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  gap: 4px;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  background: #444;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  user-select: none;
+
+  font-size: 20px;
+  font-weight: bold;
+
+  transition: 0.1s;
+}
+
+.cell:hover {
+  transform: scale(1.05);
+}
+
+.open {
+  background: #888;
+}
+
+.mine {
+  background: crimson;
+}
+
+.safezone {
+  background: #2e7d32;
+}
+
+.number1 { color: #4fc3f7; }
+.number2 { color: #81c784; }
+.number3 { color: #ffb74d; }
+.number4 { color: #ef5350; }
+
+#status {
+  margin-top: 15px;
+  font-size: 18px;
+}
+
+</style>
 </head>
+
 <body>
 
-  <h1>🚃 満員スイーパー</h1>
-  <p>安全な場所を探せ！</p>
+<h1>🚃 満員スイーパー</h1>
+<p>圧縮地獄を避けてドア付近へ逃げろ</p>
+
+<div id="train">
+
+  <div id="doors">
+    <div class="door"></div>
+    <div class="door"></div>
+  </div>
 
   <div id="game"></div>
 
-  <script>
-    const game = document.getElementById("game");
-    const size = 8;
+</div>
 
-    for (let i = 0; i < size * size; i++) {
+<div id="status"></div>
+
+<script>
+
+const size = 8;
+const mineCount = 12;
+
+const game = document.getElementById("game");
+const statusText = document.getElementById("status");
+
+let board = [];
+
+function init() {
+
+  for (let y = 0; y < size; y++) {
+
+    board[y] = [];
+
+    for (let x = 0; x < size; x++) {
+
+      board[y][x] = {
+        mine: false,
+        open: false,
+        flag: false,
+        count: 0,
+        element: null
+      };
+    }
+  }
+
+  placeMines();
+  calculateNumbers();
+  drawBoard();
+
+  statusText.textContent = "右クリックで危険地帯をマーク";
+}
+
+function placeMines() {
+
+  let placed = 0;
+
+  while (placed < mineCount) {
+
+    const x = Math.floor(Math.random() * size);
+    const y = Math.floor(Math.random() * size);
+
+    if (!board[y][x].mine) {
+      board[y][x].mine = true;
+      placed++;
+    }
+  }
+}
+
+function calculateNumbers() {
+
+  for (let y = 0; y < size; y++) {
+
+    for (let x = 0; x < size; x++) {
+
+      let count = 0;
+
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+
+          const ny = y + dy;
+          const nx = x + dx;
+
+          if (
+            ny >= 0 &&
+            ny < size &&
+            nx >= 0 &&
+            nx < size &&
+            board[ny][nx].mine
+          ) {
+            count++;
+          }
+        }
+      }
+
+      if (board[y][x].mine) count--;
+
+      board[y][x].count = count;
+    }
+  }
+}
+
+function drawBoard() {
+
+  game.innerHTML = "";
+
+  for (let y = 0; y < size; y++) {
+
+    for (let x = 0; x < size; x++) {
+
       const cell = document.createElement("div");
+
       cell.className = "cell";
 
-      const danger = Math.random() < 0.2;
+      cell.onclick = () => openCell(x, y);
 
-      cell.onclick = () => {
-        if (danger) {
-          cell.classList.add("danger");
-          cell.textContent = "💀";
-          alert("圧死した！");
-        } else {
-          cell.classList.add("safe");
-          cell.textContent = "🧍";
-        }
+      cell.oncontextmenu = (e) => {
+        e.preventDefault();
+        toggleFlag(x, y);
       };
+
+      board[y][x].element = cell;
 
       game.appendChild(cell);
     }
-  </script>
+  }
+}
+
+function toggleFlag(x, y) {
+
+  const data = board[y][x];
+
+  if (data.open) return;
+
+  data.flag = !data.flag;
+
+  data.element.textContent = data.flag ? "🚩" : "";
+}
+
+function openCell(x, y) {
+
+  const data = board[y][x];
+
+  if (data.open || data.flag) return;
+
+  data.open = true;
+
+  const cell = data.element;
+
+  cell.classList.add("open");
+
+  if (data.mine) {
+
+    cell.textContent = "💥";
+    cell.classList.add("mine");
+
+    revealAll();
+
+    statusText.textContent = "満員電車に押し潰された…";
+
+    return;
+  }
+
+  if (data.count > 0) {
+
+    cell.textContent = data.count;
+    cell.classList.add("number" + data.count);
+
+  } else {
+
+    cell.textContent = "🧍";
+
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+
+        const nx = x + dx;
+        const ny = y + dy;
+
+        if (
+          nx >= 0 &&
+          nx < size &&
+          ny >= 0 &&
+          ny < size
+        ) {
+          openCell(nx, ny);
+        }
+      }
+    }
+  }
+
+  checkWin();
+}
+
+function revealAll() {
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+
+      const data = board[y][x];
+
+      if (data.mine) {
+        data.element.textContent = "💀";
+        data.element.classList.add("mine");
+      }
+    }
+  }
+}
+
+function checkWin() {
+
+  let safeCells = 0;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+
+      const data = board[y][x];
+
+      if (!data.mine && data.open) {
+        safeCells++;
+      }
+    }
+  }
+
+  if (safeCells === (size * size - mineCount)) {
+
+    statusText.textContent = "🚉 生還成功！ドアへ脱出した！";
+
+    revealAll();
+  }
+}
+
+init();
+
+</script>
 
 </body>
 </html>
