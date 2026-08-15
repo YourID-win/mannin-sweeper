@@ -1,2 +1,19 @@
-# mannin-sweeper
-A minesweeper-inspired puzzle game set in a crowded commuter train.
+# 満員スイーパー / Mannin Sweeper
+
+満員電車をテーマにした、ブラウザだけで遊べるマインスイーパー風パズルゲームです。
+
+## 遊び方
+
+- 左クリックまたはタップでマスを開きます。
+- 右クリックで危険地帯に旗を立てます。
+- 数字は周囲8マスにある危険地帯の数です。
+- すべての安全地帯を見つけるとクリアです。
+- 普通電車、通勤ラッシュ、朝の東西線の3難易度があります。
+
+## 実行
+
+依存パッケージやビルド工程はありません。`index.html`をブラウザで開くか、GitHub Pagesで配信します。
+
+## License
+
+[MIT License](LICENSE)
